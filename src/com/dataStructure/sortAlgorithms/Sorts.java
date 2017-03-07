@@ -1,5 +1,7 @@
 package com.dataStructure.sortAlgorithms;
 
+import java.text.ParseException;
+
 /*
  * 内部排序
  * // ①，直接插入排序，折半插入排序，希尔排序===》插入排序
@@ -10,8 +12,6 @@ package com.dataStructure.sortAlgorithms;
  */
 
 public class Sorts {
-
-	
 
 	/*
 	 * 1.直接插入排序,稳定算法
@@ -44,25 +44,26 @@ public class Sorts {
 	public static void BInsertSort(int[] a) {
 		int temp;
 		int i, j, high, low, m;
-		low = 0;
 
 		for (i = 1; i < a.length; i++) {
-			high = i - 1;
-			temp = a[i];
-			while (low <= high) {
-				m = (low + high) / 2;
-				if (temp <= a[m])
-					high = m - 1;
-				else
-					low = m + 1;
-
+			if (a[i] < a[i - 1]) {
+				
+				//low 和high的初始化需要在这里面进行~~~
+				low = 0;
+				high = i - 1;
+				temp = a[i];
+				while (low <= high) {
+					m = (low + high) / 2;
+					if (temp <= a[m])
+						high = m - 1;
+					else
+						low = m + 1;
+				}
+				for (j = i - 1; j >= high + 1; j--) {
+					a[j + 1] = a[j];
+				}
+					a[high + 1] = temp;
 			}
-
-			for (j = i - 1; j >= high + 1; j--) {
-				a[j + 1] = a[j];
-			}
-
-			a[high + 1] = temp;
 
 		}
 
@@ -110,9 +111,10 @@ public class Sorts {
 	public static void BubbleSort(int[] a) {
 		int t = a.length - 1;
 		int temp;
-		boolean flag = false;
-		for (int i = t; i >= 0 && flag; i--) {
-			for (int j = 0; j < t - i; j++) {
+		boolean flag = true;
+		for (int i = t; i >= 0 && flag; i = t) {
+			flag = false;
+			for (int j = 0; j < i; j++) {
 				if (a[j] > a[j + 1]) {
 					temp = a[j];
 					a[j] = a[j + 1];
@@ -132,26 +134,37 @@ public class Sorts {
 	 */
 
 	public static void DBubbleSort(int[] a) {
-		int min, max, temp;
-		boolean flag = false;
-		int t = a.length;
-		for (int j = 0; j < a.length / 2; j++) {
-			for (int i = j; i < t - j - 1; i++) {
-				min = a[i];
-				max = a[t - 1];
-				if (a[i + 1] < min) {
+		int pre = 0;
+		int post = a.length - 1;
+		int temp;
 
-					temp = a[i + 1];
-					a[i + 1] = min;
-					min = temp;
-				} else if (a[i + 1] > max) {
+		while (pre < post) {
 
-					temp = a[i + 1];
-					a[i + 1] = max;
-					max = temp;
+			// 从前往后，将最大的value沉到最后面
+			for (int i = pre; i < post; i++) {
+				if (a[i] > a[i + 1]) {
+
+					temp = a[i];
+					a[i] = a[i + 1];
+					a[i + 1] = temp;
 				}
 			}
+
+			// 从后往前，将最小的value 浮到最前面
+			for (int j = post; j > pre; j--) {
+				if (a[j] < a[j - 1]) {
+
+					temp = a[j];
+					a[j] = a[j - 1];
+					a[j - 1] = temp;
+				}
+			}
+
+			pre++;
+			post--;
+
 		}
+
 		for (int k = 0; k < a.length; k++) {
 			System.out.print(a[k] + (k == a.length - 1 ? "\n" : "|"));
 		}
@@ -163,7 +176,7 @@ public class Sorts {
 	public static int partion(int[] a, int low, int high) {
 		int temp = a[low];
 		while (low < high) {
-			while (low < high && temp < a[high])
+			while (low < high && temp < a[high]) //循环里面的low<high 不可以省略
 				high--;
 			a[low] = a[high];
 			while (low < high && temp > a[low])
@@ -191,19 +204,16 @@ public class Sorts {
 	 */
 	// 寻找从i到a.length里面值最小的那个
 	public static int SelectMinKey(int[] a, int i) {
-		int min = a[i];
+		int min = i;
 		int temp;
-		for (int j = i + 1; i < a.length; j++) {
-			if (min > a[j]) {
-				temp = min;
-				min = a[j];
-				a[j] = min;
-
+		for (int j = i + 1;  j< a.length; j++) {
+			if (a[min] > a[j]) {
+				min=j;
 			}
 		}
 
 		return min;
-	}
+	} 
 
 	public static void SelectSort(int[] a) {
 		int j, temp;
@@ -223,13 +233,14 @@ public class Sorts {
 	}
 
 	// 大顶堆
+	//s 为开始的下标，m为结束的下标
 	public static void HeapAjust(int[] H, int s, int m) {
 		// 顶点从0编号，因为数组从0编号
 		int rc = H[s];
-		for (int j = 2 * s + 1; j < m; j = j * 2 + 1) {
-			if (j < m && H[j] < H[j + 1])
+		for (int j = 2 * s + 1; j <=m; j = j * 2 + 1) {
+			if (j < m -1 && H[j] < H[j + 1])
 				j++;
-			if (H[s] > H[j])
+			if (rc > H[j])
 				break;
 			H[s] = H[j];
 			s = j;
@@ -240,16 +251,16 @@ public class Sorts {
 
 	public static void HeapSort(int[] H) {
 		int temp;
-		for (int i = H.length / 2 - 1; i >= 0; i--) {
-			HeapAjust(H, i, H.length);
+		for (int i = H.length / 2 - 1 ; i >= 0; i--) {
+			HeapAjust(H, i, H.length-1);
 		}
 
-		for (int j = H.length - 1; j > 0; j--) {
+		for (int j = H.length - 1; j >0; j--) {
 			temp = H[j];
 			H[j] = H[0];
 			H[0] = temp;
 
-			HeapAjust(H, 0, j - 1);
+			HeapAjust(H, 0, j-1);
 		}
 
 		for (int k = 0; k < H.length; k++) {
@@ -257,68 +268,93 @@ public class Sorts {
 		}
 	}
 
+	
+	
+	
 	/*
 	 * 归并排序,稳定排序
 	 */
-
-	public static void Merge(int[] a, int[] res, int i, int m, int n) {
-		int k, j;
-		for (j = m + 1, k = i; i <= m && j <= n; ++k) {
-			if (a[i] < a[j])
-				res[k] = a[i++];
-			else
-				res[k] = a[j++];
-
-		}
-
-		if (i <= m) {
-			for (int p = i; p <= m; p++) {
-				res[k++] = a[p];
-			}
-		}
-
-		if (j <= n) {
-			for (int p = i; p <= n; p++) {
-				res[k++] = a[p];
-			}
-		}
-
-	}
-
-	public static void MSort(int[] a, int[] res, int s, int t) {
-		int m;
-		if (s == t)
-			res[s] = a[s];
-		else {
-			m = (s + t) / 2;
-			MSort(a, res, s, m);
-			MSort(a, res, m + 1, t);
-			Merge(a, res, s, m, t);
-		}
-	}
-
-	public static void MergeSort(int a[]) {
-		MSort(a, a, 0, a.length - 1); //这个要用相同的a
-		for (int k = 0; k < a.length; k++) {
+	
+	
+	public static void MergeSort(int[] a) {  
+        MSort(a, 0, a.length - 1); 
+        for (int k = 0; k < a.length; k++) {
 			System.out.print(a[k] + (k == a.length - 1 ? "\n" : "|"));
 		}
-	}
-	
-	
+    }  
+  
+    public static void MSort(int[] data, int left, int right) {  
+        if (left >= right)  
+            return;  
+        
+        int center = (left + right) / 2;            // 找出中间索引          
+        MSort(data, left, center);                 // 对左边数组进行递归         
+        MSort(data, center + 1, right);           // 对右边数组进行递归  
+        Merge(data, left, center, right);        // 合并  
+
+        //测试代码
+        // System.out.println(left+","+center+","+right);
+        // Print(data);  
+    }  
+  
+ 
+    public static void Merge(int[] data, int left, int center, int right) {  
+        
+        int[] tmpArr = new int[data.length];  // 临时数组  
+        int mid = center + 1;           // 右数组第一个元素索引          
+        int third = left;  // third 记录临时数组的索引         
+        int tmp = left;  // 缓存左数组第一个元素的索引  
+        while (left <= center && mid <= right) {  
+        	// 从两个数组中取出最小的放入临时数组  
+            if (data[left] <= data[mid]) {  
+                tmpArr[third++] = data[left++];  
+            } else {  
+                tmpArr[third++] = data[mid++];  
+            }  
+        }  
+        // 剩余部分依次放入临时数组（实际上两个while只会执行其中一个）  
+        while (mid <= right) {  
+            tmpArr[third++] = data[mid++];  
+        }  
+        while (left <= center) {  
+            tmpArr[third++] = data[left++];  
+        }  
+        // 将临时数组中的内容拷贝回原数组中  
+        // （原left-right范围的内容被复制回原数组）  
+        while (tmp <= right) {  
+            data[tmp] = tmpArr[tmp++];  
+        }  
+    }  
+  
+    
 	/*
 	 * 基数排序没有实现
 	 */
+	
+	
+	/**
+	 * 打印函数
+	 */
+	public static void Print(int[] data) {  
+		for (int k = 0; k < data.length; k++) {
+			System.out.print(data[k] + (k == data.length - 1 ? "\n" : "|"));
+		} 
+    }  
+	
+	
 
 	public static void main(String[] args) {
-		int a[] = { 49, 38, 65, 97, 76, 13, 27, 49 ,100,2,3,24};
-		InsertSort(a);
-		BInsertSort(a);
-		ShellSort(a, 5);
-		BubbleSort(a);
-		DBubbleSort(a);
-		QSort(a, 0, a.length - 1);
-		SelectSort(a);
-		HeapAjust(a, 0, a.length);
-		MergeSort(a);
+		int a[] = { 49, 38, 65, 97, 76, 13, 27, 49, 100, 2, 3, 24 };
+		
+		//需要依次测试，因为每运行一次排序，a的内容就变了（即a变成了有序的啦，排序函数没起作用啦）
+		// InsertSort(a);
+//		BInsertSort(a);
+//		 ShellSort(a, 5);
+		// BubbleSort(a);
+		// DBubbleSort(a);
+//		 QSort(a, 0, a.length - 1);
+//		 SelectSort(a);
+//		 HeapSort(a);
+		 MergeSort(a);
 	}
 }
