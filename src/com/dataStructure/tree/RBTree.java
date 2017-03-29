@@ -616,7 +616,10 @@ public class RBTree<T extends Comparable<T>> {
  
          // "node节点"不是根节点
          if (parent!=null) {
+        	 
+//        	 if (parent.left!=null && parent.left == node)
              if (parent.left == node)
+        
                  parent.left = child;
              else
                  parent.right = child;
