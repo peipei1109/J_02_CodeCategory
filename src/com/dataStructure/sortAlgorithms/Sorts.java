@@ -238,7 +238,7 @@ public class Sorts {
 		// 顶点从0编号，因为数组从0编号
 		int rc = H[s];
 		for (int j = 2 * s + 1; j <=m; j = j * 2 + 1) {
-			if (j < m -1 && H[j] < H[j + 1])
+			if (j <= m -1 && H[j] < H[j + 1])
 				j++;
 			if (rc > H[j])
 				break;
@@ -354,7 +354,7 @@ public class Sorts {
 		// DBubbleSort(a);
 //		 QSort(a, 0, a.length - 1);
 //		 SelectSort(a);
-//		 HeapSort(a);
-		 MergeSort(a);
+		 HeapSort(a);
+//		 MergeSort(a);
 	}
 }
